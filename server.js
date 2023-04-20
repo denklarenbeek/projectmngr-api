@@ -10,7 +10,7 @@ const corsOptions = require('./config/corsOptions');
 const connectDB = require('./config/connectDB');
 const mongoose = require('mongoose');
 const {logEvents} = require('./middleware/logger');
-const PORT = process.env.PORT || 3500;
+const PORT = process.env.PORT || 3000;
 
 app.use(logger);
 
@@ -30,6 +30,13 @@ app.use('/users', require('./routes/userRoutes'));
 app.use('/projects', require('./routes/projectRoutes'));
 app.use('/activity', require('./routes/activityRoutes'));
 app.use('/customers', require('./routes/customerRoutes'));
+
+// Step 1:
+app.use(express.static(path.resolve(__dirname, "./client/build")));
+// Step 2:
+app.get("*", function (request, response) {
+    response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+});
 
 app.all('*', (req, res) => {
     res.status(404);

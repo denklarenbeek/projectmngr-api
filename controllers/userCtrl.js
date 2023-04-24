@@ -164,6 +164,7 @@ const inviteNewUser = asyncHandler(async(req, res) => {
     const duplicate = await User.findOne({ email }).lean().exec();
 
     if(duplicate) {
+        console.log('Found a duplicate user by inviting a new one')
         return res.status(409).json({ message: 'The email address already exist' })
     }
 
@@ -176,28 +177,35 @@ const inviteNewUser = asyncHandler(async(req, res) => {
 
     const userObject = {email, roles: [role], name, status: 'Pending', password: hashedPwd, inviteExpireDate, customer: customerId, inviteToken };
 
-    const user = await User.create(userObject);
 
-    const activateUrl = `${process.env.FRONT_END_URL}/activateuser/${inviteToken}`
-
-    const options = { 
-        email: email, 
-        template: './templates/inviteUser.handlebars', 
-        subject: 'Invite for Projectmngr', 
-        payload: { 
-            activateUrl, 
-            name: userObject.name,
-            inviteName: req.user.name
-
+    try {
+        const user = await User.create(userObject);
+        
+        if(!user) {
+            console.log('Something went wrong creating an user....')
+            return res.status(400).json({ message: 'Something went wrong creating an user....' });
         }
-    }
 
-    await sendEmail(options)
-
-    if(user) {
-        res.status(201).json({ message: `New user ${email} is invited`});
-    } else {
-        res.status(400).json({ message: 'Invalid user data received' });
+        const activateUrl = `${process.env.FRONT_END_URL}/activateuser/${inviteToken}`
+    
+        const options = { 
+            email: email, 
+            template: './templates/inviteUser.handlebars', 
+            subject: 'Invite for Projectmngr', 
+            payload: { 
+                activateUrl, 
+                name: userObject.name,
+                inviteName: req.user.name
+    
+            }
+        }
+        await sendEmail(options)
+        console.log('Invite Email has been send')
+        return res.status(201).json({ message: `New user ${email} is invited`});
+        
+    } catch (error) {
+        console.log(`Something went wrong inviting user`, error)
+        return res.status(400).json({ message: 'Invalid user data received' });
     }
 })
 

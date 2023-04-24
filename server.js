@@ -31,13 +31,6 @@ app.use('/projects', require('./routes/projectRoutes'));
 app.use('/activity', require('./routes/activityRoutes'));
 app.use('/customers', require('./routes/customerRoutes'));
 
-// Step 1:
-app.use(express.static(path.resolve(__dirname, "./client/build")));
-// Step 2:
-app.get("*", function (request, response) {
-    response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
-});
-
 app.all('*', (req, res) => {
     res.status(404);
     if(req.accepts('html')) {

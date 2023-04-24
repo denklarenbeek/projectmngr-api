@@ -7,4 +7,8 @@ router.get('^/$|/index(.html)?', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/index.html'));
 })
 
+router.get('/check', (req, res) => {
+    res.json({msg: 'Pong'})
+})
+
 module.exports = router;

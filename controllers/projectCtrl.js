@@ -12,6 +12,7 @@ const getAllProjects = asyncHandler(async(req, res) => {
 
     const { id: userId } = req.user
     const {_id: customer} = req.user.customer
+    console.log(req.user);
     const isUser = req.user.roles[0] === 'User'
     const isSuperUser = req.user.roles[0] === 'SuperUser'
     let projects

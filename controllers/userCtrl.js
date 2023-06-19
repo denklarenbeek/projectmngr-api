@@ -39,7 +39,8 @@ const getUserByToken = asyncHandler(async(req, res) => {
 // @access Private
 const createNewUser = asyncHandler(async(req, res) => {
 
-    const {email, password, roles, name} = req.body;
+    const {password, roles, name} = req.body;
+    const email = req.body.email.toLowerCase();
 
     // Confirm Data
     if(!email || !password || !Array.isArray(roles) || !roles.length) {

@@ -16,6 +16,7 @@ router.route('/')
     .get(userController.getAllUsers)
     .post(userController.createNewUser)
     .patch(multerUploads, userController.updateUser)
+    .put(multerUploads, userController.changepicture)
     .delete(userController.deleteUser)
 
 

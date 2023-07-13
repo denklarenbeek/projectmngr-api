@@ -43,7 +43,6 @@ const userSchema = new mongoose.Schema({
     },
     picture: {
         type: String,
-        default: 'https://i.pravatar.cc/100'
     },
     color: {
         type: String,

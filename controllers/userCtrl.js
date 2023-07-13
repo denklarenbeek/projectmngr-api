@@ -39,7 +39,7 @@ const getUserByToken = asyncHandler(async(req, res) => {
 // @access Private
 const createNewUser = asyncHandler(async(req, res) => {
 
-    const {password, roles, name} = req.body;
+    const {password, roles, name, picture} = req.body;
     const email = req.body.email.toLowerCase();
 
     // Confirm Data
@@ -56,7 +56,12 @@ const createNewUser = asyncHandler(async(req, res) => {
 
     const hashedPwd = await bcrypt.hash(password, 10);
 
-    const userObject = {email, password: hashedPwd, roles, name};
+    const userObject = {
+        email, 
+        password: hashedPwd, 
+        roles, 
+        name
+    };
 
     const user = await User.create(userObject);
 
@@ -73,7 +78,10 @@ const createNewUser = asyncHandler(async(req, res) => {
 // @access Private
 const updateUser = asyncHandler(async(req, res) => {
 
-    const {id, email, roles, status, password, name, customer} = req.body;
+    console.log('body', req.file)
+    console.log('image', req.image)
+    
+    const {id, email, roles, status, password, name, customer, picture} = req.body;
 
     if(!id || !email) {
         return res.status(400).json({ message: 'All fields are required' });
@@ -211,7 +219,7 @@ const inviteNewUser = asyncHandler(async(req, res) => {
 })
 
 const activateUser = async (req, res) => {
-    const { email, name, password, password2 } = req.body
+    const { email, name, password, password2, picture } = req.body
 
     if(!email || !name || !password || !password2) return res.status(400).json({ message: 'All fields are required' })
 
@@ -219,11 +227,19 @@ const activateUser = async (req, res) => {
 
     const user = await User.findOne({email}).exec()
 
-    console.log(user)
-
+    
     if(email) user.email = email
-    if(name) user.name = name
     if(password) user.password = hashedPwd
+    
+    if(name) user.name = name
+    if(picture) {
+        user.picture = picture
+    }  else {
+        user.picture = `https://eu.ui-avatars.com/api/?name=${name}&size=250"`
+    }
+    
+    console.log(user)
+    
     user.inviteExpireDate = null
     user.inviteToken = null
     user.status = 'Active'
@@ -247,4 +263,8 @@ const changeRole = async (req, res, next) => {
     }
 }
 
-module.exports = { getAllUsers, getUserByToken, createNewUser, updateUser, deleteUser, inviteNewUser, changeRole, activateUser };
+const changepicture = async (req,res) => {
+    console.log(req.file)
+}
+
+module.exports = { getAllUsers, getUserByToken, createNewUser, updateUser, deleteUser, inviteNewUser, changeRole, activateUser, changepicture };
